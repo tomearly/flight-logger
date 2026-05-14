@@ -6,6 +6,10 @@ export type UseFlightLogFormResult = {
   validationMessage: string | null;
   fromICAO: string;
   toICAO: string;
+  isHoursInvalid: boolean;
+  isTailNumberInvalid: boolean;
+  isFromICAOInvalid: boolean;
+  isToICAOInvalid: boolean;
   handleHoursChange: (hours: string) => void;
   handleTailNumberChange: (tailNumber: string) => void;
   handleFromDestinationICAO: (fromICAO: string) => void;

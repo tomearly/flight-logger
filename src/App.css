@@ -56,6 +56,15 @@ input:focus {
   outline: 3px solid rgba(31, 111, 139, 0.18);
 }
 
+.flight-form-input-invalid,
+.flight-form-input-invalid:focus {
+  border-color: #b42318;
+}
+
+.flight-form-input-invalid:focus {
+  outline: 3px solid rgba(180, 35, 24, 0.18);
+}
+
 .app-shell {
   align-items: center;
   box-sizing: border-box;
