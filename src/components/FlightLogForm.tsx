@@ -1,5 +1,4 @@
 import { type FlightLogFormProps } from "../types/FlightLogFormProps";
-
 import { useFlightLogForm } from "../hooks/useFlightLogForm";
 
 function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
@@ -18,7 +17,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
       <div className="flight-form-row">
         <input
           id="hours"
-          min="0"
+          min="0.1"
           onChange={(event) => {
             form.handleHoursChange(event.target.value);
           }}

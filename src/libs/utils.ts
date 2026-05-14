@@ -1,4 +1,4 @@
-export function formatLoggedAt(loggedAt: string): string {
+export function formatFlightLoggedAt(loggedAt: string): string {
   return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "medium",
     timeStyle: "short"

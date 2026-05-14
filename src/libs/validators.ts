@@ -10,14 +10,10 @@ export function parseHours(value: string): number {
   return hours;
 }
 
+const validUKTailNumber = (tailNumber: string) => ukTailNumberRegex.test(tailNumber);
+
 export function validateTailNumber(tailNumber: string): string {
   const trimmedTailNumber: string = tailNumber.trim();
-
-  if (trimmedTailNumber.length === 0) {
-    throw new Error("Tail number cannot be empty.");
-  }
-
-  const validUKTailNumber = (tailNumber: string) => ukTailNumberRegex.test(tailNumber);
 
   if (!validUKTailNumber(trimmedTailNumber)) {
     throw new Error("Not a valid UK tail number");
