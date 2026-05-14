@@ -43,7 +43,11 @@ function parseLogFlightRequest(requestBody: string): LogFlightRequest {
     parsedBody.hours <= 0 ||
     !("tailNumber" in parsedBody) ||
     typeof parsedBody.tailNumber !== "string" ||
-    parsedBody.tailNumber.trim().length === 0
+    parsedBody.tailNumber.trim().length === 0 ||
+    !("fromICAO" in parsedBody) ||
+    typeof parsedBody.fromICAO !== "string" ||
+    !("toICAO" in parsedBody) ||
+    typeof parsedBody.toICAO !== "string"
   ) {
     throw new Error(
       `Expected JSON body with positive numeric hours and non-empty tailNumber fields. Body: ${requestBody}`
@@ -52,7 +56,9 @@ function parseLogFlightRequest(requestBody: string): LogFlightRequest {
 
   return {
     hours: parsedBody.hours,
-    tailNumber: parsedBody.tailNumber.trim()
+    tailNumber: parsedBody.tailNumber.trim(),
+    fromICAO: parsedBody.fromICAO,
+    toICAO: parsedBody.toICAO,
   };
 }
 
@@ -72,12 +78,14 @@ async function writeFlights(flights: FlightLogEntry[]): Promise<void> {
   await writeFile(flightsFilePath, `${JSON.stringify(flights, null, 2)}\n`, "utf-8");
 }
 
-function createFlight(hours: number, tailNumber: string): FlightLogEntry {
+function createFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
   return {
     hours,
     id: crypto.randomUUID(),
     loggedAt: new Date().toISOString(),
-    tailNumber
+    tailNumber,
+    fromICAO,
+    toICAO,
   };
 }
 
@@ -99,7 +107,9 @@ async function handleFlightLogRequest(
       const flights: FlightLogEntry[] = await readFlights();
       const flight: FlightLogEntry = createFlight(
         logFlightRequest.hours,
-        logFlightRequest.tailNumber
+        logFlightRequest.tailNumber,
+        logFlightRequest.fromICAO,
+        logFlightRequest.toICAO,
       );
 
       await writeFlights([...flights, flight]);

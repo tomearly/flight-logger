@@ -25,11 +25,11 @@ export function App(): React.JSX.Element {
   };
 
   useEffect(() => {
-    async function loadFlights(): Promise<void> {
+    function loadFlights(): void {
       try {
         dispatch({ type: "start-loading" });
 
-        const flights: FlightLogEntry[] = await fetchFlights();
+        const flights: FlightLogEntry[] = fetchFlights();
 
         dispatch({ flights, type: "load-flights" });
       } catch (error: unknown) {
@@ -37,14 +37,14 @@ export function App(): React.JSX.Element {
       }
     }
 
-    void loadFlights();
+    loadFlights();
   }, []);
 
-  async function handleLogFlight(hours: number, tailNumber: string): Promise<void> {
+  function handleLogFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): void {
     try {
       dispatch({ type: "start-saving" });
 
-      const flight: FlightLogEntry = await saveFlightHours(hours, tailNumber);
+      const flight: FlightLogEntry = saveFlightHours(hours, tailNumber, fromICAO, toICAO);
 
       dispatch({ flight, type: "log-flight" });
     } catch (error: unknown) {

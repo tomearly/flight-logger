@@ -1,30 +1,23 @@
 import type { FlightLogEntry } from "../types/FlightLogEntry";
-import type { LogFlightRequest } from "../types/LogFlightRequest";
 
 type JsonObject = Record<string, unknown>;
 
-function getErrorMessage(responseBody: string, status: number): string {
-  return `Flight log request failed. Status: ${status}. Response body: ${responseBody}`;
-}
-
-async function readErrorResponse(response: Response): Promise<string> {
-  const responseBody: string = await response.text();
-
-  return getErrorMessage(responseBody, response.status);
-}
+const flightLogStorageKey = "flight-logger:flights";
 
 function isJsonObject(value: unknown): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function parseFlightLogEntry(value: unknown): FlightLogEntry {
+function parseFlightLogEntry(value: FlightLogEntry): FlightLogEntry {
   if (
     !isJsonObject(value) ||
     typeof value.id !== "string" ||
     typeof value.hours !== "number" ||
     !Number.isFinite(value.hours) ||
     typeof value.loggedAt !== "string" ||
-    typeof value.tailNumber !== "string"
+    typeof value.tailNumber !== "string" ||
+    typeof value.fromICAO ! == "string" ||
+    typeof value.toICAO !== "string"
   ) {
     throw new Error(`Expected flight log entry response. Body: ${JSON.stringify(value)}`);
   }
@@ -33,7 +26,9 @@ function parseFlightLogEntry(value: unknown): FlightLogEntry {
     hours: value.hours,
     id: value.id,
     loggedAt: value.loggedAt,
-    tailNumber: value.tailNumber
+    tailNumber: value.tailNumber,
+    fromICAO: value.fromICAO,
+    toICAO: value.toICAO,
   };
 }
 
@@ -45,35 +40,41 @@ function parseFlightLogEntries(value: unknown): FlightLogEntry[] {
   return value.map(parseFlightLogEntry);
 }
 
-export async function fetchFlights(): Promise<FlightLogEntry[]> {
-  const response: Response = await fetch("/api/flights");
+function readFlightsFromStorage(): FlightLogEntry[] {
+  const storedFlights: string | null = window.localStorage.getItem(flightLogStorageKey);
 
-  if (!response.ok) {
-    throw new Error(await readErrorResponse(response));
+  if (storedFlights === null) {
+    return [];
   }
 
-  const responseBody = (await response.json()) as unknown;
-  const flights: FlightLogEntry[] = parseFlightLogEntries(responseBody);
+  const parsedFlights: unknown = JSON.parse(storedFlights);
 
-  return flights;
+  return parseFlightLogEntries(parsedFlights);
 }
 
-export async function saveFlightHours(hours: number, tailNumber: string): Promise<FlightLogEntry> {
-  const requestBody: LogFlightRequest = { hours, tailNumber };
-  const response: Response = await fetch("/api/flights", {
-    body: JSON.stringify(requestBody),
-    headers: {
-      "Content-Type": "application/json"
-    },
-    method: "POST"
-  });
+function writeFlightsToStorage(flights: FlightLogEntry[]): void {
+  window.localStorage.setItem(flightLogStorageKey, JSON.stringify(flights));
+}
 
-  if (!response.ok) {
-    throw new Error(await readErrorResponse(response));
-  }
+function createFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
+  return {
+    hours,
+    id: crypto.randomUUID(),
+    loggedAt: new Date().toISOString(),
+    tailNumber,
+    fromICAO,
+    toICAO,
+  };
+}
 
-  const responseBody = (await response.json()) as unknown;
-  const flight: FlightLogEntry = parseFlightLogEntry(responseBody);
+export function fetchFlights(): FlightLogEntry[] {
+  return readFlightsFromStorage();
+}
 
+export function saveFlightHours(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
+  const flight: FlightLogEntry = createFlight(hours, tailNumber, fromICAO, toICAO);
+  const flights: FlightLogEntry[] = readFlightsFromStorage();
+
+  writeFlightsToStorage([...flights, flight]);
   return flight;
 }

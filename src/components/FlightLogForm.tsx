@@ -10,7 +10,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
     <form
       className="flight-form"
       onSubmit={(event) => {
-        void form.handleSubmit(event);
+        form.handleSubmit(event);
       }}
     >
       <label htmlFor="hours">Hours</label>
@@ -35,6 +35,26 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
           }}
           type="text"
           value={form.tailNumber}
+        />
+      </div>
+      <label htmlFor="fromICAO">From ICAO</label>
+      <div className="flight-form-row">
+        <input
+          id="fromICAO"
+          onChange={(event) => {
+            form.handleFromDestinationICAO(event.target.value);
+          }}
+          type="text"
+        />
+      </div>
+      <label htmlFor="toICAO">To ICAO</label>
+      <div className="flight-form-row">
+        <input
+          id="toICAO"
+          onChange={(event) => {
+            form.handleToDestinationICAO(event.target.value);
+          }}
+          type="text"
         />
       </div>
       <button disabled={props.isSaving} type="submit">
