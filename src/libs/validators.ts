@@ -1,4 +1,4 @@
-import { ukTailNumberRegex } from "../constants/aircraft"
+import { ukTailNumberRegex } from "../constants/aircraft";
 
 export function parseHours(value: string): number {
   const hours: number = Number(value);
@@ -19,9 +19,9 @@ export function validateTailNumber(tailNumber: string): string {
 
   const validUKTailNumber = (tailNumber: string) => ukTailNumberRegex.test(tailNumber);
 
-  if(!validUKTailNumber(trimmedTailNumber)) {
+  if (!validUKTailNumber(trimmedTailNumber)) {
     throw new Error("Not a valid UK tail number");
   }
 
-  return trimmedTailNumber;
+  return trimmedTailNumber.toUpperCase();
 }

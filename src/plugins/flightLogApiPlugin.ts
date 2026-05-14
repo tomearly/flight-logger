@@ -1,4 +1,4 @@
-import { type Plugin, defineConfig } from "vite";
+import type { Plugin } from "vite";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -19,7 +19,7 @@ function sendError(response: ServerResponse, statusCode: number, message: string
 async function readRequestBody(request: IncomingMessage): Promise<string> {
   const chunks: Buffer[] = [];
 
-  for await (const chunk of request) {
+  for await (const chunk of request as AsyncIterable<Buffer | string>) {
     if (typeof chunk === "string") {
       chunks.push(Buffer.from(chunk));
       continue;
@@ -83,37 +83,47 @@ function createFlight(hours: number, tailNumber: string): FlightLogEntry {
 
 const flightsFilePath: string = resolve(process.cwd(), "data/flights.json");
 
+async function handleFlightLogRequest(
+  request: IncomingMessage,
+  response: ServerResponse
+): Promise<void> {
+  try {
+    if (request.method === "GET") {
+      sendJson(response, 200, await readFlights());
+      return;
+    }
+
+    if (request.method === "POST") {
+      const requestBody: string = await readRequestBody(request);
+      const logFlightRequest: LogFlightRequest = parseLogFlightRequest(requestBody);
+      const flights: FlightLogEntry[] = await readFlights();
+      const flight: FlightLogEntry = createFlight(
+        logFlightRequest.hours,
+        logFlightRequest.tailNumber
+      );
+
+      await writeFlights([...flights, flight]);
+      sendJson(response, 201, flight);
+      return;
+    }
+
+    sendError(response, 405, `Unsupported method for /api/flights: ${request.method}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      sendError(response, 500, error.message);
+      return;
+    }
+
+    throw error;
+  }
+}
+
 export default function flightLogApiPlugin(): Plugin {
   return {
     name: "flight-log-api",
     configureServer(server) {
-      server.middlewares.use("/api/flights", async (request, response) => {
-        try {
-          if (request.method === "GET") {
-            sendJson(response, 200, await readFlights());
-            return;
-          }
-
-          if (request.method === "POST") {
-            const requestBody: string = await readRequestBody(request);
-            const logFlightRequest: LogFlightRequest = parseLogFlightRequest(requestBody);
-            const flights: FlightLogEntry[] = await readFlights();
-            const flight: FlightLogEntry = createFlight(logFlightRequest.hours, logFlightRequest.tailNumber);
-
-            await writeFlights([...flights, flight]);
-            sendJson(response, 201, flight);
-            return;
-          }
-
-          sendError(response, 405, `Unsupported method for /api/flights: ${request.method}`);
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            sendError(response, 500, error.message);
-            return;
-          }
-
-          throw error;
-        }
+      server.middlewares.use("/api/flights", (request, response) => {
+        void handleFlightLogRequest(request, response);
       });
     }
   };
