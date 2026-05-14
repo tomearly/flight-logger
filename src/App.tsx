@@ -15,6 +15,15 @@ export function App(): React.JSX.Element {
   const [state, dispatch] = useReducer(flightLogReducer, initialFlightLogState);
   const summary: FlightSummary = useMemo(() => createFlightSummary(state), [state]);
 
+  const failError = function (error: unknown) {
+    if (error instanceof Error) {
+      dispatch({ errorMessage: error.message, type: "fail" });
+      return;
+    }
+
+    throw error;
+  };
+
   useEffect(() => {
     async function loadFlights(): Promise<void> {
       try {
@@ -24,12 +33,7 @@ export function App(): React.JSX.Element {
 
         dispatch({ flights, type: "load-flights" });
       } catch (error: unknown) {
-        if (error instanceof Error) {
-          dispatch({ errorMessage: error.message, type: "fail" });
-          return;
-        }
-
-        throw error;
+        failError(error);
       }
     }
 
@@ -44,12 +48,7 @@ export function App(): React.JSX.Element {
 
       dispatch({ flight, type: "log-flight" });
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        dispatch({ errorMessage: error.message, type: "fail" });
-        return;
-      }
-
-      throw error;
+      failError(error);
     }
   }
 
@@ -60,7 +59,9 @@ export function App(): React.JSX.Element {
         <h1 id="summary-heading">Ready for takeoff</h1>
         <FlightSummaryPanel flights={state.flights} summary={summary} />
         <FlightLogForm isSaving={state.status === "saving"} onLogFlight={handleLogFlight} />
-        {state.status === "loading" ? <p className="status-message">Loading saved flights...</p> : null}
+        {state.status === "loading" ? (
+          <p className="status-message">Loading saved flights...</p>
+        ) : null}
         {state.status === "error" && state.errorMessage !== null ? (
           <p className="form-error">{state.errorMessage}</p>
         ) : null}

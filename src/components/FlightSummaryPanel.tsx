@@ -1,6 +1,6 @@
 import type { FlightLogEntry } from "../types/FlightLogEntry";
 import type { FlightSummaryPanelProps } from "../types/FlightSummaryPanelProps";
-import { formatLoggedAt } from "../libs/utils";
+import { formatFlightLoggedAt } from "../libs/utils";
 
 function FlightSummaryPanel(props: FlightSummaryPanelProps): React.JSX.Element {
   const recentFlights: FlightLogEntry[] = props.flights.slice(-5).reverse();
@@ -28,7 +28,7 @@ function FlightSummaryPanel(props: FlightSummaryPanelProps): React.JSX.Element {
               <li key={flight.id}>
                 <span>{flight.hours.toFixed(1)} hours</span>
                 <span>{flight.tailNumber}</span>
-                <time dateTime={flight.loggedAt}>{formatLoggedAt(flight.loggedAt)}</time>
+                <time dateTime={flight.loggedAt}>{formatFlightLoggedAt(flight.loggedAt)}</time>
               </li>
             ))}
           </ul>

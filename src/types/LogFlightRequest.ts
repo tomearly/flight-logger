@@ -1,4 +1,4 @@
 export type LogFlightRequest = {
-    hours: number;
-    tailNumber: string;
+  hours: number;
+  tailNumber: string;
 };
