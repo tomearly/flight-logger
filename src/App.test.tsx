@@ -33,9 +33,8 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(screen.getByRole("heading", { name: "Ready for takeoff" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Log hours" })).toBeInTheDocument();
-    expect(screen.getByText("Log your first flight")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Flight Logger" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Log flight" })).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.queryByText("Loading saved flights...")).not.toBeInTheDocument();

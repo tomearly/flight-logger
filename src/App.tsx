@@ -55,8 +55,8 @@ export function App(): React.JSX.Element {
   return (
     <main className="app-shell">
       <section className="summary-panel" aria-labelledby="summary-heading">
-        <p className="eyebrow">Flight Logger</p>
-        <h1 id="summary-heading">Ready for takeoff</h1>
+        <p className="eyebrow"></p>
+        <h1 id="summary-heading">Flight Logger</h1>
         <FlightSummaryPanel flights={state.flights} summary={summary} />
         <FlightLogForm isSaving={state.status === "saving"} onLogFlight={handleLogFlight} />
         {state.status === "loading" ? (

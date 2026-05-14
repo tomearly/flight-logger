@@ -60,8 +60,8 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
           type="text"
         />
       </div>
-      <button disabled={props.isSaving} type="submit">
-        {props.isSaving ? "Saving..." : "Log hours"}
+      <button className="flight-form-log-button" disabled={props.isSaving} type="submit">
+        {props.isSaving ? "Saving..." : "Log flight"}
       </button>
       {form.validationMessage !== null ? (
         <p className="form-error mt-4">{form.validationMessage}</p>
