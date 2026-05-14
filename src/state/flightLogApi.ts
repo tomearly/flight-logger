@@ -8,14 +8,16 @@ function isJsonObject(value: unknown): value is JsonObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function parseFlightLogEntry(value: unknown): FlightLogEntry {
+function parseFlightLogEntry(value: FlightLogEntry): FlightLogEntry {
   if (
     !isJsonObject(value) ||
     typeof value.id !== "string" ||
     typeof value.hours !== "number" ||
     !Number.isFinite(value.hours) ||
     typeof value.loggedAt !== "string" ||
-    typeof value.tailNumber !== "string"
+    typeof value.tailNumber !== "string" ||
+    typeof value.fromICAO ! == "string" ||
+    typeof value.toICAO !== "string"
   ) {
     throw new Error(`Expected flight log entry response. Body: ${JSON.stringify(value)}`);
   }
@@ -24,7 +26,9 @@ function parseFlightLogEntry(value: unknown): FlightLogEntry {
     hours: value.hours,
     id: value.id,
     loggedAt: value.loggedAt,
-    tailNumber: value.tailNumber
+    tailNumber: value.tailNumber,
+    fromICAO: value.fromICAO,
+    toICAO: value.toICAO,
   };
 }
 
@@ -52,12 +56,14 @@ function writeFlightsToStorage(flights: FlightLogEntry[]): void {
   window.localStorage.setItem(flightLogStorageKey, JSON.stringify(flights));
 }
 
-function createFlight(hours: number, tailNumber: string): FlightLogEntry {
+function createFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
   return {
     hours,
     id: crypto.randomUUID(),
     loggedAt: new Date().toISOString(),
-    tailNumber
+    tailNumber,
+    fromICAO,
+    toICAO,
   };
 }
 
@@ -65,8 +71,8 @@ export function fetchFlights(): FlightLogEntry[] {
   return readFlightsFromStorage();
 }
 
-export function saveFlightHours(hours: number, tailNumber: string): FlightLogEntry {
-  const flight: FlightLogEntry = createFlight(hours, tailNumber);
+export function saveFlightHours(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
+  const flight: FlightLogEntry = createFlight(hours, tailNumber, fromICAO, toICAO);
   const flights: FlightLogEntry[] = readFlightsFromStorage();
 
   writeFlightsToStorage([...flights, flight]);
