@@ -40,7 +40,12 @@ export function App(): React.JSX.Element {
     loadFlights();
   }, []);
 
-  function handleLogFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): void {
+  function handleLogFlight(
+    hours: number,
+    tailNumber: string,
+    fromICAO: string,
+    toICAO: string
+  ): void {
     try {
       dispatch({ type: "start-saving" });
 

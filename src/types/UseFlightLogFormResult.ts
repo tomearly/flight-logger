@@ -1,4 +1,4 @@
-import { SubmitEvent } from "react";
+import { type SubmitEvent } from "react";
 
 export type UseFlightLogFormResult = {
   hours: string;

@@ -27,7 +27,9 @@ function FlightSummaryPanel(props: FlightSummaryPanelProps): React.JSX.Element {
               <li key={flight.id}>
                 <span>{flight.hours.toFixed(1)} hours</span>
                 <span>{flight.tailNumber}</span>
-                <span>{flight.fromICAO} to {flight.toICAO}</span>
+                <span>
+                  {flight.fromICAO} to {flight.toICAO}
+                </span>
                 <time dateTime={flight.loggedAt}>{formatFlightLoggedAt(flight.loggedAt)}</time>
               </li>
             ))}
