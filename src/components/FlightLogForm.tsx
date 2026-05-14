@@ -34,6 +34,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
             form.handleTailNumberChange(event.target.value);
           }}
           type="text"
+          placeholder="e.g. G-TOME"
           value={form.tailNumber}
         />
       </div>
@@ -44,6 +45,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
           onChange={(event) => {
             form.handleFromDestinationICAO(event.target.value);
           }}
+          placeholder="e.g. EHAM"
           type="text"
         />
       </div>
@@ -54,6 +56,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
           onChange={(event) => {
             form.handleToDestinationICAO(event.target.value);
           }}
+          placeholder='e.g. EGLL'
           type="text"
         />
       </div>
