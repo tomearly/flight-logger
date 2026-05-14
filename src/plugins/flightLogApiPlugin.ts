@@ -58,7 +58,7 @@ function parseLogFlightRequest(requestBody: string): LogFlightRequest {
     hours: parsedBody.hours,
     tailNumber: parsedBody.tailNumber.trim(),
     fromICAO: parsedBody.fromICAO,
-    toICAO: parsedBody.toICAO,
+    toICAO: parsedBody.toICAO
   };
 }
 
@@ -78,14 +78,19 @@ async function writeFlights(flights: FlightLogEntry[]): Promise<void> {
   await writeFile(flightsFilePath, `${JSON.stringify(flights, null, 2)}\n`, "utf-8");
 }
 
-function createFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
+function createFlight(
+  hours: number,
+  tailNumber: string,
+  fromICAO: string,
+  toICAO: string
+): FlightLogEntry {
   return {
     hours,
     id: crypto.randomUUID(),
     loggedAt: new Date().toISOString(),
     tailNumber,
     fromICAO,
-    toICAO,
+    toICAO
   };
 }
 
@@ -109,7 +114,7 @@ async function handleFlightLogRequest(
         logFlightRequest.hours,
         logFlightRequest.tailNumber,
         logFlightRequest.fromICAO,
-        logFlightRequest.toICAO,
+        logFlightRequest.toICAO
       );
 
       await writeFlights([...flights, flight]);

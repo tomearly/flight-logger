@@ -28,7 +28,7 @@ function parseFlightLogEntry(value: FlightLogEntry): FlightLogEntry {
     loggedAt: value.loggedAt,
     tailNumber: value.tailNumber,
     fromICAO: value.fromICAO,
-    toICAO: value.toICAO,
+    toICAO: value.toICAO
   };
 }
 
@@ -56,14 +56,19 @@ function writeFlightsToStorage(flights: FlightLogEntry[]): void {
   window.localStorage.setItem(flightLogStorageKey, JSON.stringify(flights));
 }
 
-function createFlight(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
+function createFlight(
+  hours: number,
+  tailNumber: string,
+  fromICAO: string,
+  toICAO: string
+): FlightLogEntry {
   return {
     hours,
     id: crypto.randomUUID(),
     loggedAt: new Date().toISOString(),
     tailNumber,
     fromICAO,
-    toICAO,
+    toICAO
   };
 }
 
@@ -71,7 +76,12 @@ export function fetchFlights(): FlightLogEntry[] {
   return readFlightsFromStorage();
 }
 
-export function saveFlightHours(hours: number, tailNumber: string, fromICAO: string, toICAO: string): FlightLogEntry {
+export function saveFlightHours(
+  hours: number,
+  tailNumber: string,
+  fromICAO: string,
+  toICAO: string
+): FlightLogEntry {
   const flight: FlightLogEntry = createFlight(hours, tailNumber, fromICAO, toICAO);
   const flights: FlightLogEntry[] = readFlightsFromStorage();
 

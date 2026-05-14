@@ -47,6 +47,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
           }}
           placeholder="e.g. EHAM"
           type="text"
+          value={form.fromICAO}
         />
       </div>
       <label htmlFor="toICAO">To ICAO</label>
@@ -56,8 +57,9 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
           onChange={(event) => {
             form.handleToDestinationICAO(event.target.value);
           }}
-          placeholder='e.g. EGLL'
+          placeholder="e.g. EGLL"
           type="text"
+          value={form.toICAO}
         />
       </div>
       <button className="flight-form-log-button" disabled={props.isSaving} type="submit">
