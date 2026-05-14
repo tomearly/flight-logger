@@ -16,7 +16,7 @@ function parseFlightLogEntry(value: FlightLogEntry): FlightLogEntry {
     !Number.isFinite(value.hours) ||
     typeof value.loggedAt !== "string" ||
     typeof value.tailNumber !== "string" ||
-    typeof value.fromICAO ! == "string" ||
+    typeof value.fromICAO !== "string" ||
     typeof value.toICAO !== "string"
   ) {
     throw new Error(`Expected flight log entry response. Body: ${JSON.stringify(value)}`);
