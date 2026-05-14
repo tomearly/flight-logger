@@ -1,0 +1,70 @@
+import { useEffect, useMemo, useReducer } from "react";
+import "./App.css";
+import FlightLogForm from "./components/FlightLogForm";
+import FlightSummaryPanel from "./components/FlightSummaryPanel";
+import { fetchFlights, saveFlightHours } from "./state/flightLogApi";
+import {
+  createFlightSummary,
+  flightLogReducer,
+  initialFlightLogState
+} from "./state/flightLogReducer";
+import type { FlightSummary } from "./types/FlightSummary";
+import type { FlightLogEntry } from "./types/FlightLogEntry";
+
+export function App(): React.JSX.Element {
+  const [state, dispatch] = useReducer(flightLogReducer, initialFlightLogState);
+  const summary: FlightSummary = useMemo(() => createFlightSummary(state), [state]);
+
+  useEffect(() => {
+    async function loadFlights(): Promise<void> {
+      try {
+        dispatch({ type: "start-loading" });
+
+        const flights: FlightLogEntry[] = await fetchFlights();
+
+        dispatch({ flights, type: "load-flights" });
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          dispatch({ errorMessage: error.message, type: "fail" });
+          return;
+        }
+
+        throw error;
+      }
+    }
+
+    void loadFlights();
+  }, []);
+
+  async function handleLogFlight(hours: number, tailNumber: string): Promise<void> {
+    try {
+      dispatch({ type: "start-saving" });
+
+      const flight: FlightLogEntry = await saveFlightHours(hours, tailNumber);
+
+      dispatch({ flight, type: "log-flight" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        dispatch({ errorMessage: error.message, type: "fail" });
+        return;
+      }
+
+      throw error;
+    }
+  }
+
+  return (
+    <main className="app-shell">
+      <section className="summary-panel" aria-labelledby="summary-heading">
+        <p className="eyebrow">Flight Logger</p>
+        <h1 id="summary-heading">Ready for takeoff</h1>
+        <FlightSummaryPanel flights={state.flights} summary={summary} />
+        <FlightLogForm isSaving={state.status === "saving"} onLogFlight={handleLogFlight} />
+        {state.status === "loading" ? <p className="status-message">Loading saved flights...</p> : null}
+        {state.status === "error" && state.errorMessage !== null ? (
+          <p className="form-error">{state.errorMessage}</p>
+        ) : null}
+      </section>
+    </main>
+  );
+}

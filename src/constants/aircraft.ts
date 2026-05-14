@@ -1,0 +1,1 @@
+export const ukTailNumberRegex = /^G-[A-P_R-Z]{4}$/i;
