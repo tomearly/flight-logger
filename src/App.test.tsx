@@ -2,21 +2,34 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { App } from "./App";
 
+function createStorageStub(): Storage {
+  const storage = new Map<string, string>();
+
+  return {
+    get length() {
+      return storage.size;
+    },
+    clear: () => {
+      storage.clear();
+    },
+    getItem: (key: string) => storage.get(key) ?? null,
+    key: (index: number) => Array.from(storage.keys())[index] ?? null,
+    removeItem: (key: string) => {
+      storage.delete(key);
+    },
+    setItem: (key: string, value: string) => {
+      storage.set(key, value);
+    }
+  };
+}
+
 describe("App", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
   it("renders the flight logger dashboard", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(() =>
-        Promise.resolve({
-          json: () => Promise.resolve([]),
-          ok: true
-        })
-      )
-    );
+    vi.stubGlobal("localStorage", createStorageStub());
 
     render(<App />);
 

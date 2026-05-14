@@ -10,7 +10,7 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
     <form
       className="flight-form"
       onSubmit={(event) => {
-        void form.handleSubmit(event);
+        form.handleSubmit(event);
       }}
     >
       <label htmlFor="hours">Hours</label>
