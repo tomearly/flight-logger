@@ -17,7 +17,6 @@ function FlightSummaryPanel(props: FlightSummaryPanelProps): React.JSX.Element {
           <dd>{props.summary.totalHours.toFixed(1)}</dd>
         </div>
       </dl>
-      <p className="next-action">{props.summary.nextAction}</p>
       <section className="recent-flights" aria-labelledby="recent-flights-heading">
         <h2 id="recent-flights-heading">Recent flights</h2>
         {recentFlights.length === 0 ? (
@@ -35,6 +34,7 @@ function FlightSummaryPanel(props: FlightSummaryPanelProps): React.JSX.Element {
           </ul>
         )}
       </section>
+      <p className="next-action">{props.summary.nextAction}</p>
     </>
   );
 }

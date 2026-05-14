@@ -73,6 +73,7 @@ input:focus {
   max-width: 36rem;
   padding: 2rem;
   width: 100%;
+  margin: 0 auto;
 }
 
 .eyebrow {
@@ -123,8 +124,9 @@ dd {
 
 .recent-flights {
   border-top: 1px solid #dbe3ed;
+  border-bottom: 1px solid #dbe3ed;
   margin: 0 0 1.5rem;
-  padding: 1.5rem 0 0;
+  padding: 1.5rem 0;
 }
 
 .recent-flights h2 {
@@ -181,6 +183,10 @@ dd {
 .form-error {
   color: #b42318;
   margin: 0;
+}
+
+.flight-form-log-button {
+  margin-top: 8px;
 }
 
 @media (max-width: 560px) {
