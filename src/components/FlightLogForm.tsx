@@ -16,6 +16,8 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
       <label htmlFor="hours">Hours</label>
       <div className="flight-form-row">
         <input
+          aria-invalid={form.isHoursInvalid}
+          className={form.isHoursInvalid ? "flight-form-input-invalid" : undefined}
           id="hours"
           min="0.1"
           onChange={(event) => {
@@ -29,6 +31,8 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
       <label htmlFor="tailNumber">Tail Number</label>
       <div className="flight-form-row">
         <input
+          aria-invalid={form.isTailNumberInvalid}
+          className={form.isTailNumberInvalid ? "flight-form-input-invalid" : undefined}
           id="tailNumber"
           onChange={(event) => {
             form.handleTailNumberChange(event.target.value);
@@ -41,6 +45,8 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
       <label htmlFor="fromICAO">From ICAO</label>
       <div className="flight-form-row">
         <input
+          aria-invalid={form.isFromICAOInvalid}
+          className={form.isFromICAOInvalid ? "flight-form-input-invalid" : undefined}
           id="fromICAO"
           onChange={(event) => {
             form.handleFromDestinationICAO(event.target.value);
@@ -53,6 +59,8 @@ function FlightLogForm(props: FlightLogFormProps): React.JSX.Element {
       <label htmlFor="toICAO">To ICAO</label>
       <div className="flight-form-row">
         <input
+          aria-invalid={form.isToICAOInvalid}
+          className={form.isToICAOInvalid ? "flight-form-input-invalid" : undefined}
           id="toICAO"
           onChange={(event) => {
             form.handleToDestinationICAO(event.target.value);

@@ -16,6 +16,10 @@ export function useFlightLogForm(params: UseFlightLogFormParams): UseFlightLogFo
   const [fromICAO, setFromICAO] = useState<string>("");
   const [toICAO, setToICAO] = useState<string>("");
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [isHoursInvalid, setIsHoursInvalid] = useState<boolean>(false);
+  const [isTailNumberInvalid, setIsTailNumberInvalid] = useState<boolean>(false);
+  const [isFromICAOInvalid, setIsFromICAOInvalid] = useState<boolean>(false);
+  const [isToICAOInvalid, setIsToICAOInvalid] = useState<boolean>(false);
 
   function resetForm(): void {
     setHours("");
@@ -24,17 +28,86 @@ export function useFlightLogForm(params: UseFlightLogFormParams): UseFlightLogFo
     setToICAO("");
   }
 
+  function resetInvalidInputs(): void {
+    setIsHoursInvalid(false);
+    setIsTailNumberInvalid(false);
+    setIsFromICAOInvalid(false);
+    setIsToICAOInvalid(false);
+  }
+
+  function handleHoursChange(hoursValue: string): void {
+    setHours(hoursValue);
+    setIsHoursInvalid(false);
+  }
+
+  function handleTailNumberChange(tailNumberValue: string): void {
+    setTailNumber(tailNumberValue);
+    setIsTailNumberInvalid(false);
+  }
+
+  function handleFromDestinationICAO(fromICAOValue: string): void {
+    setFromICAO(fromICAOValue);
+    setIsFromICAOInvalid(false);
+  }
+
+  function handleToDestinationICAO(toICAOValue: string): void {
+    setToICAO(toICAOValue);
+    setIsToICAOInvalid(false);
+  }
+
   async function logFlight(): Promise<void> {
     try {
-      const parsedHours: number = parseHours(hours);
-      const validatedTailNumber: string = validateTailNumber(tailNumber);
+      resetInvalidInputs();
+
+      const validationMessages: string[] = [];
+      let parsedHours: number | null = null;
+      let validatedTailNumber: string | null = null;
+
+      try {
+        parsedHours = parseHours(hours);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setIsHoursInvalid(true);
+          validationMessages.push(error.message);
+        } else {
+          throw error;
+        }
+      }
+
+      try {
+        validatedTailNumber = validateTailNumber(tailNumber);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setIsTailNumberInvalid(true);
+          validationMessages.push(error.message);
+        } else {
+          throw error;
+        }
+      }
+
       const normalizedFromICAO: string = normalizeIcaoCode(fromICAO);
       const normalizedToICAO: string = normalizeIcaoCode(toICAO);
-      const validatedFromICAO: boolean = await validateIcao(normalizedFromICAO);
-      const validatedToICAO: boolean = await validateIcao(normalizedToICAO);
+      const [validatedFromICAO, validatedToICAO]: [boolean, boolean] = await Promise.all([
+        validateIcao(normalizedFromICAO),
+        validateIcao(normalizedToICAO)
+      ]);
 
-      if (!validatedFromICAO || !validatedToICAO) {
-        throw new Error("Enter valid from and to ICAO airports.");
+      if (!validatedFromICAO) {
+        setIsFromICAOInvalid(true);
+        validationMessages.push("Enter valid from airport ICAO code.");
+      }
+
+      if (!validatedToICAO) {
+        setIsToICAOInvalid(true);
+        validationMessages.push("Enter valid to airport ICAO code.");
+      }
+
+      if (validationMessages.length > 0) {
+        throw new Error(validationMessages[0]);
+      }
+
+      if (parsedHours === null || validatedTailNumber === null) {
+        throw new Error("Expected validated flight form values.");
       }
 
       setValidationMessage(null);
@@ -61,10 +134,14 @@ export function useFlightLogForm(params: UseFlightLogFormParams): UseFlightLogFo
     validationMessage,
     fromICAO,
     toICAO,
-    handleHoursChange: setHours,
-    handleTailNumberChange: setTailNumber,
-    handleFromDestinationICAO: setFromICAO,
-    handleToDestinationICAO: setToICAO,
+    isHoursInvalid,
+    isTailNumberInvalid,
+    isFromICAOInvalid,
+    isToICAOInvalid,
+    handleHoursChange,
+    handleTailNumberChange,
+    handleFromDestinationICAO,
+    handleToDestinationICAO,
     handleSubmit
   };
 }
